@@ -4,7 +4,7 @@ android {
     compileSdkVersion 22
     buildToolsVersion "21.1.2"
     defaultConfig {
-        applicationId "axlsw.com.Citat"
+        applicationId "com.axlsw.Citat"
         minSdkVersion 14
         targetSdkVersion 22
         versionCode 5

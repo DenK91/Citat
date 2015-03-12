@@ -1,4 +1,4 @@
-package axlsw.com.Citat;
+package com.axlsw.Citat;
 
 import android.app.Activity;
 import android.os.Bundle;
