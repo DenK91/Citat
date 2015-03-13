@@ -1,6 +1,24 @@
 <resources>
-    <string name="app_name">Citat</string>
 
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+    <string name="app_name" translatable="false">Citat</string>
+    <string name="ad_unit_id">ca-app-pub-4867342099234785/3519008168</string>
+
+    <string name="citat_number_def_text" translatable="false">999</string>
+
+    <string name="button_prev_descr" translatable="false">button_prev</string>
+    <string name="button_next_descr" translatable="false">button_next</string>
+    <string name="button_bush_descr" translatable="false">button_bush</string>
+    <string name="button_share_descr" translatable="false">button_share</string>
+    <string name="button_random_descr" translatable="false">button_random</string>
+    <string name="button_add_favorites_descr" translatable="false">button_add_favorites</string>
+
+    <string name="citat_text_def">
+        Citat text.\n
+        Citat text. Citat text.\n
+        Citat text. Citat text. Citat text.\n
+        Citat text. Citat text. Citat text. Citat text. Citat text.
+    </string>
+    <string name="auth_text">Auth text.</string>
+
+
 </resources>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="array_of_authors">
+        <item>Benjamin Franklin</item>
+        <item>Oscar Wilde</item>
+        <item></item>
+        <item>Jim Rohn</item>
+        <item>Bo Bennett</item>
+        <item>Benjamin Franklin</item>
+        <item>Bo Bennett</item>
+        <item>Benjamin Franklin</item>
+        <item>Bo Bennett</item>
+        <item>Mark Twain</item>
+        <item>Confucius </item>
+        <item>Oscar Wilde</item>
+        <item>Benjamin Disraeli</item>
+        <item></item>
+        <item>Conrad</item>
+        <item>Charlemagne</item>
+        <item>Oscar Wilde</item>
+        <item>Mark Twain</item>
+        <item>Lily Tomlin</item>
+        <item>John Lennon</item>
+        <item>Aphra Behn</item>
+        <item></item>
+        <item>Mark Twain</item>
+        <item>Proverb</item>
+        <item>Marva Collins</item>
+        <item>Confucius</item>
+        <item>Samuel Johnson</item>
+        <item>Bernard Shaw</item>
+        <item>Albert Einstein</item>
+        <item>Gore Vidal</item>
+        <item>Murphy’s law</item>
+        <item>Benjamin Franklin</item>
+        <item>Hubbard Elbert</item>
+        <item>James</item>
+        <item>Proverb</item>
+        <item>Buxton</item>
+        <item>Melville</item>
+        <item>Emerson</item>
+        <item>Proverb</item>
+        <item>Rowland</item>
+        <item>Jones</item>
+        <item>Plato</item>
+        <item>Galsworthy</item>
+        <item>Bovee</item>
+        <item>Benjamin Franklin</item>
+        <item>Samuel Johnson</item>
+        <item>Benjamin Franklin</item>
+        <item>Benjamin Franklin</item>
+        <item>Emerson</item>
+        <item>Fielding</item>
+        <item>Franklin</item>
+        <item>Franklin</item>
+        <item>Billings</item>
+        <item>Franklin</item>
+        <item>Hubbard, Elbert</item>
+        <item>Fuller</item>
+        <item></item>
+        <item>Twain</item>
+        <item>Carlyle</item>
+        <item>Franklin</item>
+        <item>Conrad</item>
+        <item>Rowland</item>
+        <item>Chalmers</item>
+        <item>Shaw</item>
+        <item>Howe</item>
+        <item>Dryden</item>
+        <item>Eliot</item>
+        <item>Ludwig</item>
+        <item>Voltaire</item>
+        <item>Howe</item>
+        <item>Picasso</item>
+        <item>Kennedy</item>
+        <item>Horace</item>
+        <item>Reade, Charles</item>
+        <item>Shakespeare</item>
+        <item>Cowley</item>
+        <item>Wilde</item>
+        <item>Mencken</item>
+        <item>France</item>
+        <item>La Bruyere</item>
+        <item>Mill</item>
+        <item>Hubbard, Elbert</item>
+        <item>Fromm</item>
+        <item></item>
+        <item>Beecher</item>
+        <item>Erasmus</item>
+        <item>Fuller</item>
+        <item>Swift</item>
+        <item>Dryden</item>
+        <item>Smollett</item>
+        <item>Johnson, Lyndon</item>
+        <item>Rogers</item>
+        <item>Ingersoll</item>
+        <item>Emerson</item>
+        <item>Emerson</item>
+        <item>Lichtenberg</item>
+        <item>Parker</item>
+        <item>Emerson</item>
+        <item>Shakespeare</item>
+        <item>Maurois</item>
+    </string-array>
+
+</resources>
