@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <integer name="max_value_citats">100</integer>
+    <integer name="max_numbers_citats">100</integer>
 </resources>

@@ -1,36 +1,89 @@
 package com.axlsw.Citat;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
+
 /**
  * Main Activity for Citat app.
  */
 public class CitatActivity extends Activity {
 
-    /**  Menu items id.  */
-    final int MENU_ID_SEND = 100;
-    final int MENU_ID_FAVORITES = 101;
-    final int MENU_ID_EXIT = 102;
-    final int SUB_MENU_ID_AUTH = 201;
-    final int SUB_MENU_ID_SITE = 202;
-    final int SUB_MENU_ID_PROD = 203;
-
     private static AdView mAdView;
+
+    /**  Menu items id.  */
+    final private static int MENU_ID_SEND = 100;
+    final private static int MENU_ID_FAVORITES = 101;
+    final private static int MENU_ID_EXIT = 102;
+    final private static int SUB_MENU_ID_AUTH = 201;
+    final private static int SUB_MENU_ID_SITE = 202;
+    final private static int SUB_MENU_ID_PROD = 203;
+
+    /**  SharedPreferences.     */
+    private SharedPreferences mSharedPreferences;
+    final private static String PREFERENCES_CITAT_ACTIVITY = "preferences_citat_activity";
+
+    /**  Keys for SharedPreferences.  */
+    final private static String KEY_CURRENT_CITAT = "com.axlsw.citat.key_current_citat";
+
+    private List<String> mCitatList;
+    private List<String> mAuthList;
+    private int mCurrentCitat;
+    private int mMaxCitats;
+
+    /** Views */
+    private TextView mCitatNumber;
+    private TextView mCitatText;
+    private TextView mCitatAuth;
+
+    /** Controls */
+    private ImageView mButtonPrev;
+    private ImageView mButtonNext;
+    private ImageView mButtonRandom;
+    private ImageView mButtonFavorites;
+    private ImageView mButtonBash;
+    private ImageView mButtonShare;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_citat);
+
+        /** Load content. */
+        mCitatList = new ArrayList<String>(Arrays.asList(getResources().getStringArray(R.array.array_of_citats)));
+        mAuthList = new ArrayList<String>(Arrays.asList(getResources().getStringArray(R.array.array_of_authors)));
+        mMaxCitats = mCitatList.size();
+        mCurrentCitat = loadCurrentCitatFromPreferences();
+        if(mCurrentCitat == -1) {
+            mCurrentCitat = 0;
+            Toast.makeText(this, "first", Toast.LENGTH_SHORT).show();
+        }
+        if (mCurrentCitat > (mMaxCitats - 1)) {
+            mCurrentCitat = 0;
+        }
+
+        mCitatNumber = (TextView) findViewById(R.id.citat_number);
+        mCitatText = (TextView) findViewById(R.id.citat_text);
+        mCitatAuth = (TextView) findViewById(R.id.citat_auth);
+        setCurrentCitat();
+
+        initControls();
         initAdMob();
     }
 
@@ -79,6 +132,47 @@ public class CitatActivity extends Activity {
     }
 
     /**
+     * Init controls.
+     */
+    void initControls() {
+        mButtonPrev = (ImageView) findViewById(R.id.button_prew);
+        mButtonNext = (ImageView) findViewById(R.id.button_next);
+        mButtonRandom = (ImageView) findViewById(R.id.button_random);
+        mButtonFavorites = (ImageView) findViewById(R.id.button_add_favorites);
+        mButtonBash = (ImageView) findViewById(R.id.button_bash);
+        mButtonShare = (ImageView) findViewById(R.id.button_share);
+
+        mButtonPrev.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if (mCurrentCitat == 0) {
+                    mCurrentCitat = mMaxCitats - 1;
+                } else {
+                    mCurrentCitat--;
+                }
+                setCurrentCitat();
+            }
+        });
+
+        mButtonNext.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if (mCurrentCitat >= (mMaxCitats - 1)) {
+                    mCurrentCitat = 0;
+                } else {
+                    mCurrentCitat++;
+                }
+                setCurrentCitat();
+            }
+        });
+
+        mButtonRandom.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                mCurrentCitat = generateRandomCitatNumber();
+                setCurrentCitat();
+            }
+        });
+    }
+
+    /**
      * Init adView.
      */
     void initAdMob() {
@@ -108,6 +202,7 @@ public class CitatActivity extends Activity {
 
     @Override
     protected void onPause() {
+        saveCurrentCitatToPreferences(mCurrentCitat);
         mAdView.pause();
         super.onPause();
     }
@@ -115,7 +210,43 @@ public class CitatActivity extends Activity {
     @Override
     protected void onDestroy() {
         mAdView.destroy();
+        saveCurrentCitatToPreferences(mCurrentCitat);
         super.onDestroy();
+    }
+
+    /**
+     * Load current citat from shared preferences.
+     *
+     * @return current citat.
+     */
+    int loadCurrentCitatFromPreferences() {
+        if (mSharedPreferences == null) {
+            mSharedPreferences = getSharedPreferences(PREFERENCES_CITAT_ACTIVITY, MODE_PRIVATE);
+        }
+        return mSharedPreferences.getInt(KEY_CURRENT_CITAT, -1);
+    }
+
+    /**
+     * Saves current citat to shared preferences.
+     *
+     * @param aCurrentCitat will be saved
+     */
+    private void saveCurrentCitatToPreferences(int aCurrentCitat) {
+        if (mSharedPreferences == null) {
+            mSharedPreferences = getSharedPreferences(PREFERENCES_CITAT_ACTIVITY, MODE_PRIVATE);
+        }
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putInt(KEY_CURRENT_CITAT, aCurrentCitat);
+        editor.commit();
+    }
+
+    /**
+     * Sets current citat.
+     */
+    void setCurrentCitat() {
+        mCitatNumber.setText(Integer.toString(mCurrentCitat + 1));
+        mCitatText.setText(mCitatList.get(mCurrentCitat));
+        mCitatAuth.setText(mAuthList.get(mCurrentCitat));
     }
 
     /**
@@ -131,5 +262,9 @@ public class CitatActivity extends Activity {
                 + getString(R.string.app_name) + "\"");
         startActivity(Intent.createChooser(intent,
                 getString(R.string.send_way2)));*/
+    }
+
+    int generateRandomCitatNumber() {
+        return Math.abs(new Random().nextInt()) % mMaxCitats;
     }
 }
