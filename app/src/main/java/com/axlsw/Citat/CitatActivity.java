@@ -1,6 +1,8 @@
 package com.axlsw.Citat;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
@@ -26,6 +28,7 @@ import java.util.Random;
 public class CitatActivity extends Activity {
 
     private static AdView mAdView;
+    private Context mContext;
 
     /**  Menu items id.  */
     final private static int MENU_ID_SEND = 100;
@@ -52,18 +55,12 @@ public class CitatActivity extends Activity {
     private TextView mCitatText;
     private TextView mCitatAuth;
 
-    /** Controls */
-    private ImageView mButtonPrev;
-    private ImageView mButtonNext;
-    private ImageView mButtonRandom;
-    private ImageView mButtonFavorites;
-    private ImageView mButtonBash;
-    private ImageView mButtonShare;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_citat);
+
+        mContext = getApplicationContext();
 
         /** Load content. */
         mCitatList = new ArrayList<String>(Arrays.asList(getResources().getStringArray(R.array.array_of_citats)));
@@ -72,7 +69,7 @@ public class CitatActivity extends Activity {
         mCurrentCitat = loadCurrentCitatFromPreferences();
         if(mCurrentCitat == -1) {
             mCurrentCitat = 0;
-            Toast.makeText(this, "first", Toast.LENGTH_SHORT).show();
+            showTostWithMessage(this, "first");
         }
         if (mCurrentCitat > (mMaxCitats - 1)) {
             mCurrentCitat = 0;
@@ -103,26 +100,26 @@ public class CitatActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem aItem) {
         switch (aItem.getItemId()) {
             case MENU_ID_SEND:
-                Toast.makeText(this, getString(R.string.toast_message_send), Toast.LENGTH_SHORT).show();
+                showTostWithMessage(this, getString(R.string.toast_message_send));
                 sendCurrentCitat();
                 break;
             case MENU_ID_FAVORITES:
-                Toast.makeText(this, getString(R.string.toast_message_favorites), Toast.LENGTH_SHORT).show();
+                showTostWithMessage(this, getString(R.string.toast_message_favorites));
                 //TODO: after adding favorite
                 //Intent intentFav = new Intent(this, FavoriteActivity.class);
                 //startActivity(intentFav);
                 break;
             case SUB_MENU_ID_AUTH:
-                Toast.makeText(this, getString(R.string.toast_message_auth), Toast.LENGTH_SHORT).show();
+                showTostWithMessage(this, getString(R.string.toast_message_auth));
                 break;
             case SUB_MENU_ID_SITE:
-                Toast.makeText(this, getString(R.string.toast_message_site), Toast.LENGTH_SHORT).show();
+                showTostWithMessage(this, getString(R.string.toast_message_site));
                 break;
             case SUB_MENU_ID_PROD:
-                Toast.makeText(this, getString(R.string.toast_message_prod), Toast.LENGTH_SHORT).show();
+                showTostWithMessage(this, getString(R.string.toast_message_prod));
                 break;
             case MENU_ID_EXIT:
-                Toast.makeText(this, getString(R.string.toast_message_exit), Toast.LENGTH_SHORT).show();
+                showTostWithMessage(this, getString(R.string.toast_message_exit));
                 this.finish();
                 break;
             default:
@@ -135,14 +132,7 @@ public class CitatActivity extends Activity {
      * Init controls.
      */
     void initControls() {
-        mButtonPrev = (ImageView) findViewById(R.id.button_prew);
-        mButtonNext = (ImageView) findViewById(R.id.button_next);
-        mButtonRandom = (ImageView) findViewById(R.id.button_random);
-        mButtonFavorites = (ImageView) findViewById(R.id.button_add_favorites);
-        mButtonBash = (ImageView) findViewById(R.id.button_bash);
-        mButtonShare = (ImageView) findViewById(R.id.button_share);
-
-        mButtonPrev.setOnClickListener(new View.OnClickListener() {
+        ((ImageView) findViewById(R.id.button_prew)).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if (mCurrentCitat == 0) {
                     mCurrentCitat = mMaxCitats - 1;
@@ -153,7 +143,7 @@ public class CitatActivity extends Activity {
             }
         });
 
-        mButtonNext.setOnClickListener(new View.OnClickListener() {
+        ((ImageView) findViewById(R.id.button_next)).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if (mCurrentCitat >= (mMaxCitats - 1)) {
                     mCurrentCitat = 0;
@@ -164,12 +154,30 @@ public class CitatActivity extends Activity {
             }
         });
 
-        mButtonRandom.setOnClickListener(new View.OnClickListener() {
+        ((ImageView) findViewById(R.id.button_random)).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 mCurrentCitat = generateRandomCitatNumber();
                 setCurrentCitat();
             }
         });
+
+        ((ImageView) findViewById(R.id.button_share)).setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("text/plain");
+                intent.putExtra(Intent.EXTRA_TEXT, mCitatList.get(mCurrentCitat) + "\n\n"
+                        +  mAuthList.get(mCurrentCitat) + "\n\n"
+                        + getString(R.string.share_mesage) + " \""
+                        + getString(R.string.app_name) + "\"");
+                startActivity(Intent.createChooser(intent,
+                        getString(R.string.share_way)));
+
+                showTostWithMessage(mContext, getString(R.string.toast_message_send));
+            }
+        });
+
+        //mButtonFavorites = (ImageView) findViewById(R.id.button_add_favorites);
+        //mButtonBash = (ImageView) findViewById(R.id.button_bash);
     }
 
     /**
@@ -264,6 +272,20 @@ public class CitatActivity extends Activity {
                 getString(R.string.send_way2)));*/
     }
 
+    /**
+     * Shows toast with message.
+     *
+     * @param aContext context.
+     * @param aMsg message for show.
+     */
+    public static void showTostWithMessage(Context aContext, String aMsg) {
+        Toast.makeText(aContext, aMsg, Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * Generate random number from range of MaxCitat.
+     * @return random number from range of MaxCitat.
+     */
     int generateRandomCitatNumber() {
         return Math.abs(new Random().nextInt()) % mMaxCitats;
     }

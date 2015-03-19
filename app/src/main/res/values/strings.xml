@@ -37,4 +37,8 @@
     <string name="toast_message_prod">This first:)</string>
     <string name="toast_message_exit">Thank you for your attention;)</string>
 
+    <!-- Share -->
+    <string name="share_mesage">Send by app</string>
+    <string name="share_way">Send by</string>
+
 </resources>
