@@ -28,7 +28,6 @@ import java.util.Random;
 public class CitatActivity extends Activity {
 
     private static AdView mAdView;
-    private Context mContext;
 
     /**  Menu items id.  */
     final private static int MENU_ID_SEND = 100;
@@ -44,29 +43,38 @@ public class CitatActivity extends Activity {
 
     /**  Keys for SharedPreferences.  */
     final private static String KEY_CURRENT_CITAT = "com.axlsw.citat.key_current_citat";
+    final private static String KEY_FAVORITES_LIST = "com.axlsw.citat.key_favorites_list";
+
+    final private static String SEPARATOR_FOR_FAVORITES = ":";
 
     private List<String> mCitatList;
     private List<String> mAuthList;
     private int mCurrentCitat;
     private int mMaxCitats;
+    private List<Integer> mFavoritesList;
 
     /** Views */
     private TextView mCitatNumber;
     private TextView mCitatText;
     private TextView mCitatAuth;
+    private ImageView mButtonPrev;
+    private ImageView mButtonNext;
+    private ImageView mButtonShare;
+    private ImageView mButtonRand;
+    private ImageView mButtonFavorites;
+    private ImageView mButtonBash;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_citat);
 
-        mContext = getApplicationContext();
-
         /** Load content. */
-        mCitatList = new ArrayList<String>(Arrays.asList(getResources().getStringArray(R.array.array_of_citats)));
-        mAuthList = new ArrayList<String>(Arrays.asList(getResources().getStringArray(R.array.array_of_authors)));
+        mCitatList = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.array_of_citats)));
+        mAuthList = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.array_of_authors)));
         mMaxCitats = mCitatList.size();
         mCurrentCitat = loadCurrentCitatFromPreferences();
+        mFavoritesList = loadFavoritesListFromPreferences();
         if(mCurrentCitat == -1) {
             mCurrentCitat = 0;
             showTostWithMessage(this, "first");
@@ -78,6 +86,12 @@ public class CitatActivity extends Activity {
         mCitatNumber = (TextView) findViewById(R.id.citat_number);
         mCitatText = (TextView) findViewById(R.id.citat_text);
         mCitatAuth = (TextView) findViewById(R.id.citat_auth);
+        mButtonPrev = (ImageView) findViewById(R.id.button_prew);
+        mButtonNext = (ImageView) findViewById(R.id.button_next);
+        mButtonRand = (ImageView) findViewById(R.id.button_random);
+        mButtonShare = (ImageView) findViewById(R.id.button_share);
+        mButtonFavorites = (ImageView) findViewById(R.id.button_add_favorites);
+        mButtonBash = (ImageView) findViewById(R.id.button_bash);
         setCurrentCitat();
 
         initControls();
@@ -132,52 +146,77 @@ public class CitatActivity extends Activity {
      * Init controls.
      */
     void initControls() {
-        ((ImageView) findViewById(R.id.button_prew)).setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                if (mCurrentCitat == 0) {
-                    mCurrentCitat = mMaxCitats - 1;
-                } else {
-                    mCurrentCitat--;
-                }
-                setCurrentCitat();
-            }
-        });
+        mButtonPrev.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View aView) {
+                        if (mCurrentCitat == 0) {
+                            mCurrentCitat = mMaxCitats - 1;
+                        } else {
+                            mCurrentCitat--;
+                        }
+                        setCurrentCitat();
+                    }
+                });
 
-        ((ImageView) findViewById(R.id.button_next)).setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                if (mCurrentCitat >= (mMaxCitats - 1)) {
-                    mCurrentCitat = 0;
-                } else {
-                    mCurrentCitat++;
-                }
-                setCurrentCitat();
-            }
-        });
+        mButtonNext.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View aView) {
+                        if (mCurrentCitat >= (mMaxCitats - 1)) {
+                            mCurrentCitat = 0;
+                        } else {
+                            mCurrentCitat++;
+                        }
+                        setCurrentCitat();
+                    }
+                });
 
-        ((ImageView) findViewById(R.id.button_random)).setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                mCurrentCitat = generateRandomCitatNumber();
-                setCurrentCitat();
-            }
-        });
+        mButtonRand.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View aView) {
+                        mCurrentCitat = generateRandomCitatNumber();
+                        setCurrentCitat();
+                    }
+                });
 
-        ((ImageView) findViewById(R.id.button_share)).setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_SEND);
-                intent.setType("text/plain");
-                intent.putExtra(Intent.EXTRA_TEXT, mCitatList.get(mCurrentCitat) + "\n\n"
-                        +  mAuthList.get(mCurrentCitat) + "\n\n"
-                        + getString(R.string.share_mesage) + " \""
-                        + getString(R.string.app_name) + "\"");
-                startActivity(Intent.createChooser(intent,
-                        getString(R.string.share_way)));
+        mButtonShare.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View aView) {
+                        Intent intent = new Intent(Intent.ACTION_SEND);
+                        intent.setType("text/plain");
+                        intent.putExtra(Intent.EXTRA_TEXT, mCitatList.get(mCurrentCitat) + "\n\n"
+                                + mAuthList.get(mCurrentCitat) + "\n\n"
+                                + getString(R.string.share_mesage) + " \""
+                                + getString(R.string.app_name) + "\"");
+                        startActivity(Intent.createChooser(intent,
+                                getString(R.string.share_way)));
 
-                showTostWithMessage(mContext, getString(R.string.toast_message_send));
-            }
-        });
+                        showTostWithMessage(aView.getContext(), getString(R.string.toast_message_send));
+                    }
+                });
 
-        //mButtonFavorites = (ImageView) findViewById(R.id.button_add_favorites);
-        //mButtonBash = (ImageView) findViewById(R.id.button_bash);
+        mButtonFavorites.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View aView) {
+                        if (!mFavoritesList.contains(mCurrentCitat)) {
+                            mFavoritesList.add(mCurrentCitat);
+                            mButtonFavorites.setImageResource(R.drawable.button_favorite_remove);
+                        } else {
+                            mFavoritesList.remove(mFavoritesList.indexOf(mCurrentCitat));
+                            mButtonFavorites.setImageResource(R.drawable.button_favorite_add);
+                        }
+                    }
+                });
+
+        mButtonFavorites.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View aView) {
+                        showTostWithMessage(aView.getContext(), getString(R.string.toast_message_favorites));
+                        return false;
+                    }
+                });
+
+        mButtonBash.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View aView) {
+                        showTostWithMessage(aView.getContext(), getString(R.string.toast_message_online));
+                    }
+                });
     }
 
     /**
@@ -211,6 +250,7 @@ public class CitatActivity extends Activity {
     @Override
     protected void onPause() {
         saveCurrentCitatToPreferences(mCurrentCitat);
+        saveFavoritesListToPreferences(mFavoritesList);
         mAdView.pause();
         super.onPause();
     }
@@ -218,7 +258,6 @@ public class CitatActivity extends Activity {
     @Override
     protected void onDestroy() {
         mAdView.destroy();
-        saveCurrentCitatToPreferences(mCurrentCitat);
         super.onDestroy();
     }
 
@@ -235,9 +274,29 @@ public class CitatActivity extends Activity {
     }
 
     /**
+     * Load favorites list from shared preferences.
+     *
+     * @return favorites list.
+     */
+    List<Integer> loadFavoritesListFromPreferences() {
+        if (mSharedPreferences == null) {
+            mSharedPreferences = getSharedPreferences(PREFERENCES_CITAT_ACTIVITY, MODE_PRIVATE);
+        }
+        String favString = mSharedPreferences.getString(KEY_FAVORITES_LIST, "");
+        List<Integer> favList = new ArrayList<>();
+        if (!favString.isEmpty()) {
+            String[] favArray = favString.split(SEPARATOR_FOR_FAVORITES);
+            for (String i : favArray) {
+                favList.add(Integer.valueOf(i));
+            }
+        }
+        return favList;
+    }
+
+    /**
      * Saves current citat to shared preferences.
      *
-     * @param aCurrentCitat will be saved
+     * @param aCurrentCitat will be saved.
      */
     private void saveCurrentCitatToPreferences(int aCurrentCitat) {
         if (mSharedPreferences == null) {
@@ -245,7 +304,29 @@ public class CitatActivity extends Activity {
         }
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.putInt(KEY_CURRENT_CITAT, aCurrentCitat);
-        editor.commit();
+        editor.apply();
+    }
+
+    /**
+     * Saves favorites list to shared preferences.
+     *
+     * @param aFavoritesList will be saved.
+     */
+    private void saveFavoritesListToPreferences(List<Integer> aFavoritesList) {
+        if (mSharedPreferences == null) {
+            mSharedPreferences = getSharedPreferences(PREFERENCES_CITAT_ACTIVITY, MODE_PRIVATE);
+        }
+        String favString = "";
+        for (int i = 0; i < aFavoritesList.size(); i++) {
+            if (i != 0) {
+                favString += SEPARATOR_FOR_FAVORITES + aFavoritesList.get(i);
+            } else {
+                favString += aFavoritesList.get(i);
+            }
+        }
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putString(KEY_FAVORITES_LIST, favString);
+        editor.apply();
     }
 
     /**
@@ -255,6 +336,11 @@ public class CitatActivity extends Activity {
         mCitatNumber.setText(Integer.toString(mCurrentCitat + 1));
         mCitatText.setText(mCitatList.get(mCurrentCitat));
         mCitatAuth.setText(mAuthList.get(mCurrentCitat));
+        if (mFavoritesList.contains(mCurrentCitat)) {
+            mButtonFavorites.setImageResource(R.drawable.button_favorite_remove);
+        } else {
+            mButtonFavorites.setImageResource(R.drawable.button_favorite_add);
+        }
     }
 
     /**

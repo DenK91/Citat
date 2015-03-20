@@ -21,7 +21,7 @@
     <string name="auth_text_def">Auth text.</string>
 
     <!-- Menu items text -->
-    <string name="menu_text_send">Send</string>
+    <string name="menu_text_send">Share</string>
     <string name="menu_text_favorites">Favorite</string>
     <string name="menu_text_about">About</string>
     <string name="menu_text_exit">Exit</string>
@@ -30,15 +30,16 @@
     <string name="sub_menu_text_prod">Products</string>
 
     <!-- Toast messages -->
-    <string name="toast_message_send">Choose how to send</string>
+    <string name="toast_message_send">Choose how to share</string>
     <string name="toast_message_favorites">Favorite</string>
+    <string name="toast_message_online">Online</string>
     <string name="toast_message_auth">AXL, DEN_K</string>
     <string name="toast_message_site">SciCat.ru</string>
     <string name="toast_message_prod">This first:)</string>
     <string name="toast_message_exit">Thank you for your attention;)</string>
 
     <!-- Share -->
-    <string name="share_mesage">Send by app</string>
-    <string name="share_way">Send by</string>
+    <string name="share_mesage">Share by app</string>
+    <string name="share_way">Share by</string>
 
 </resources>
