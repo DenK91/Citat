@@ -61,7 +61,8 @@ public class CitatActivity extends Activity {
     private ImageView mButtonNext;
     private ImageView mButtonShare;
     private ImageView mButtonRand;
-    private ImageView mButtonFavorites;
+    private ImageView mButtonAddToFavorites;
+    private ImageView mButtonGoToFavorites;
     private ImageView mButtonBash;
 
     @Override
@@ -90,7 +91,8 @@ public class CitatActivity extends Activity {
         mButtonNext = (ImageView) findViewById(R.id.button_next);
         mButtonRand = (ImageView) findViewById(R.id.button_random);
         mButtonShare = (ImageView) findViewById(R.id.button_share);
-        mButtonFavorites = (ImageView) findViewById(R.id.button_add_favorites);
+        mButtonAddToFavorites = (ImageView) findViewById(R.id.button_like_favorites);
+        mButtonGoToFavorites = (ImageView) findViewById(R.id.button_go_to_favorites);
         mButtonBash = (ImageView) findViewById(R.id.button_bash);
         setCurrentCitat();
 
@@ -120,8 +122,8 @@ public class CitatActivity extends Activity {
             case MENU_ID_FAVORITES:
                 showTostWithMessage(this, getString(R.string.toast_message_favorites));
                 //TODO: after adding favorite
-                //Intent intentFav = new Intent(this, FavoriteActivity.class);
-                //startActivity(intentFav);
+                Intent intentFav = new Intent(this, FavoritesActivity.class);
+                startActivity(intentFav);
                 break;
             case SUB_MENU_ID_AUTH:
                 showTostWithMessage(this, getString(R.string.toast_message_auth));
@@ -190,24 +192,26 @@ public class CitatActivity extends Activity {
                     }
                 });
 
-        mButtonFavorites.setOnClickListener(new View.OnClickListener() {
+        mButtonAddToFavorites.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View aView) {
                         if (!mFavoritesList.contains(mCurrentCitat)) {
                             mFavoritesList.add(mCurrentCitat);
-                            mButtonFavorites.setImageResource(R.drawable.button_favorite_remove);
+                            mButtonAddToFavorites.setImageResource(R.drawable.button_favorite_remove);
                         } else {
                             mFavoritesList.remove(mFavoritesList.indexOf(mCurrentCitat));
-                            mButtonFavorites.setImageResource(R.drawable.button_favorite_add);
+                            mButtonAddToFavorites.setImageResource(R.drawable.button_favorite_add);
                         }
                     }
                 });
 
-        mButtonFavorites.setOnLongClickListener(new View.OnLongClickListener() {
+        mButtonGoToFavorites.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public boolean onLongClick(View aView) {
+                    public void onClick(View aView) {
                         showTostWithMessage(aView.getContext(), getString(R.string.toast_message_favorites));
-                        return false;
+                        //TODO: favorites
+                        Intent intentFav = new Intent(aView.getContext(), FavoritesActivity.class);
+                        startActivity(intentFav);
                     }
                 });
 
@@ -337,9 +341,9 @@ public class CitatActivity extends Activity {
         mCitatText.setText(mCitatList.get(mCurrentCitat));
         mCitatAuth.setText(mAuthList.get(mCurrentCitat));
         if (mFavoritesList.contains(mCurrentCitat)) {
-            mButtonFavorites.setImageResource(R.drawable.button_favorite_remove);
+            mButtonAddToFavorites.setImageResource(R.drawable.button_favorite_remove);
         } else {
-            mButtonFavorites.setImageResource(R.drawable.button_favorite_add);
+            mButtonAddToFavorites.setImageResource(R.drawable.button_favorite_add);
         }
     }
 

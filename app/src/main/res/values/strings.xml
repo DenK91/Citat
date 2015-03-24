@@ -19,6 +19,7 @@
         Citat text. Citat text. Citat text. Citat text. Citat text.
     </string>
     <string name="auth_text_def">Auth text.</string>
+    <string name="have_not_favorite">Have not selected favorite quotes</string>
 
     <!-- Menu items text -->
     <string name="menu_text_send">Share</string>
