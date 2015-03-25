@@ -91,7 +91,7 @@
                 android:layout_marginBottom="10dp" />
 
             <ImageView
-                android:id="@+id/button_like_favorites"
+                android:id="@+id/button_add_favorites"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
@@ -142,7 +142,7 @@
                     android:contentDescription="@string/button_random_descr"/>
 
                 <ImageView
-                    android:id="@+id/button_go_to_favorites"
+                    android:id="@+id/button_favorites_switch"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"

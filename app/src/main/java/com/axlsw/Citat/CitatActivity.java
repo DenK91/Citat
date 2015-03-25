@@ -50,8 +50,11 @@ public class CitatActivity extends Activity {
     private List<String> mCitatList;
     private List<String> mAuthList;
     private int mCurrentCitat;
+    private int mCurrentFavorite;
     private int mMaxCitats;
+    private int mMaxFavorites;
     private List<Integer> mFavoritesList;
+    private boolean isFavoritesScreen = false;
 
     /** Views */
     private TextView mCitatNumber;
@@ -62,7 +65,7 @@ public class CitatActivity extends Activity {
     private ImageView mButtonShare;
     private ImageView mButtonRand;
     private ImageView mButtonAddToFavorites;
-    private ImageView mButtonGoToFavorites;
+    private ImageView mButtonFavoritesSwitch;
     private ImageView mButtonBash;
 
     @Override
@@ -91,8 +94,8 @@ public class CitatActivity extends Activity {
         mButtonNext = (ImageView) findViewById(R.id.button_next);
         mButtonRand = (ImageView) findViewById(R.id.button_random);
         mButtonShare = (ImageView) findViewById(R.id.button_share);
-        mButtonAddToFavorites = (ImageView) findViewById(R.id.button_like_favorites);
-        mButtonGoToFavorites = (ImageView) findViewById(R.id.button_go_to_favorites);
+        mButtonAddToFavorites = (ImageView) findViewById(R.id.button_add_favorites);
+        mButtonFavoritesSwitch = (ImageView) findViewById(R.id.button_favorites_switch);
         mButtonBash = (ImageView) findViewById(R.id.button_bash);
         setCurrentCitat();
 
@@ -120,10 +123,7 @@ public class CitatActivity extends Activity {
                 sendCurrentCitat();
                 break;
             case MENU_ID_FAVORITES:
-                showTostWithMessage(this, getString(R.string.toast_message_favorites));
-                //TODO: after adding favorite
-                Intent intentFav = new Intent(this, FavoritesActivity.class);
-                startActivity(intentFav);
+                switchFavoritesScreen();
                 break;
             case SUB_MENU_ID_AUTH:
                 showTostWithMessage(this, getString(R.string.toast_message_auth));
@@ -150,45 +150,60 @@ public class CitatActivity extends Activity {
     void initControls() {
         mButtonPrev.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View aView) {
-                        if (mCurrentCitat == 0) {
-                            mCurrentCitat = mMaxCitats - 1;
+                        if (isFavoritesScreen) {
+                            if (mCurrentFavorite == 0) {
+                                mCurrentFavorite = mMaxFavorites - 1;
+                            } else {
+                                mCurrentFavorite--;
+                            }
+                            setCurrentFavorites();
                         } else {
-                            mCurrentCitat--;
+                            if (mCurrentCitat == 0) {
+                                mCurrentCitat = mMaxCitats - 1;
+                            } else {
+                                mCurrentCitat--;
+                            }
+                            setCurrentCitat();
                         }
-                        setCurrentCitat();
                     }
                 });
 
         mButtonNext.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View aView) {
-                        if (mCurrentCitat >= (mMaxCitats - 1)) {
-                            mCurrentCitat = 0;
+                        if (isFavoritesScreen) {
+                            if (mCurrentFavorite >= (mMaxFavorites -1)) {
+                                mCurrentFavorite = 0;
+                            } else {
+                                mCurrentFavorite++;
+                            }
+                            setCurrentFavorites();
                         } else {
-                            mCurrentCitat++;
+                            if (mCurrentCitat >= (mMaxCitats - 1)) {
+                                mCurrentCitat = 0;
+                            } else {
+                                mCurrentCitat++;
+                            }
+                            setCurrentCitat();
                         }
-                        setCurrentCitat();
+
                     }
                 });
 
         mButtonRand.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View aView) {
-                        mCurrentCitat = generateRandomCitatNumber();
-                        setCurrentCitat();
+                        if (isFavoritesScreen) {
+                            mCurrentFavorite = generateRandomNumber(mMaxFavorites);
+                            setCurrentFavorites();
+                        } else {
+                            mCurrentCitat = generateRandomNumber(mMaxCitats);
+                            setCurrentCitat();
+                        }
                     }
                 });
 
         mButtonShare.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View aView) {
-                        Intent intent = new Intent(Intent.ACTION_SEND);
-                        intent.setType("text/plain");
-                        intent.putExtra(Intent.EXTRA_TEXT, mCitatList.get(mCurrentCitat) + "\n\n"
-                                + mAuthList.get(mCurrentCitat) + "\n\n"
-                                + getString(R.string.share_mesage) + " \""
-                                + getString(R.string.app_name) + "\"");
-                        startActivity(Intent.createChooser(intent,
-                                getString(R.string.share_way)));
-
-                        showTostWithMessage(aView.getContext(), getString(R.string.toast_message_send));
+                        sendCurrentCitat();
                     }
                 });
 
@@ -205,13 +220,10 @@ public class CitatActivity extends Activity {
                     }
                 });
 
-        mButtonGoToFavorites.setOnClickListener(new View.OnClickListener() {
+        mButtonFavoritesSwitch.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View aView) {
-                        showTostWithMessage(aView.getContext(), getString(R.string.toast_message_favorites));
-                        //TODO: favorites
-                        Intent intentFav = new Intent(aView.getContext(), FavoritesActivity.class);
-                        startActivity(intentFav);
+                        switchFavoritesScreen();
                     }
                 });
 
@@ -263,6 +275,52 @@ public class CitatActivity extends Activity {
     protected void onDestroy() {
         mAdView.destroy();
         super.onDestroy();
+    }
+
+    void switchFavoritesScreen () {
+        if (isFavoritesScreen) {
+            isFavoritesScreen = false;
+            mainInit();
+        } else {
+            isFavoritesScreen = true;
+            showTostWithMessage(this, getString(R.string.toast_message_favorites));
+            favoritesInit();
+        }
+    }
+
+    void mainInit() {
+        mMaxFavorites = mFavoritesList.size();
+        mCitatNumber.setVisibility(View.VISIBLE);
+        mCitatAuth.setVisibility(View.VISIBLE);
+        mButtonPrev.setVisibility(View.VISIBLE);
+        mButtonNext.setVisibility(View.VISIBLE);
+        mButtonRand.setVisibility(View.VISIBLE);
+        mButtonAddToFavorites.setVisibility(View.VISIBLE);
+        mButtonBash.setVisibility(View.VISIBLE);
+        mButtonShare.setVisibility(View.VISIBLE);
+        mCitatNumber.setTextSize(55);
+        setCurrentCitat();
+    }
+
+    void favoritesInit() {
+        mMaxFavorites = mFavoritesList.size();
+
+        mButtonBash.setVisibility(View.INVISIBLE);
+        mButtonShare.setVisibility(View.INVISIBLE);
+        mButtonAddToFavorites.setVisibility(View.INVISIBLE);
+
+        if (mMaxFavorites < 1) {
+            mCitatNumber.setVisibility(View.INVISIBLE);
+            mCitatAuth.setVisibility(View.INVISIBLE);
+            mButtonPrev.setVisibility(View.INVISIBLE);
+            mButtonNext.setVisibility(View.INVISIBLE);
+            mButtonRand.setVisibility(View.INVISIBLE);
+            mCitatText.setText(R.string.have_not_favorite);
+        } else {
+            mCitatNumber.setTextSize(20);
+            mCurrentFavorite = 0;
+            setCurrentFavorites();
+        }
     }
 
     /**
@@ -348,18 +406,35 @@ public class CitatActivity extends Activity {
     }
 
     /**
+     * Sets current favorite citat.
+     */
+    void setCurrentFavorites() {
+        int current;
+        if (mCurrentFavorite < mMaxFavorites) {
+            current = mFavoritesList.get(mCurrentFavorite);
+        } else {
+            current = 0;
+        }
+
+        mCitatNumber.setText(new StringBuilder((mCurrentFavorite+1) + " (" + (current + 1)
+                + ")").toString());
+        mCitatText.setText(mCitatList.get(current));
+        mCitatAuth.setText(mAuthList.get(current));
+    }
+
+    /**
      * Send intent with current citat in extra for citat sending.
      */
     private void sendCurrentCitat() {
-        /*TODO: sendCitat
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
-        intent.putExtra(Intent.EXTRA_TEXT, getCitat()[current] + "\n\n"
-                + getAuth()[current] + "\n\n"
-                + getString(R.string.send_mesage) + " \""
+        intent.putExtra(Intent.EXTRA_TEXT, mCitatList.get(mCurrentCitat) + "\n\n"
+                + mAuthList.get(mCurrentCitat) + "\n\n"
+                + getString(R.string.share_mesage) + " \""
                 + getString(R.string.app_name) + "\"");
         startActivity(Intent.createChooser(intent,
-                getString(R.string.send_way2)));*/
+                getString(R.string.share_way)));
+        showTostWithMessage(this, getString(R.string.toast_message_send));
     }
 
     /**
@@ -373,10 +448,12 @@ public class CitatActivity extends Activity {
     }
 
     /**
-     * Generate random number from range of MaxCitat.
-     * @return random number from range of MaxCitat.
+     * Generate random number from range.
+     *
+     * @param aRange range.
+     * @return random number from range.
      */
-    int generateRandomCitatNumber() {
-        return Math.abs(new Random().nextInt()) % mMaxCitats;
+    int generateRandomNumber(int aRange) {
+        return Math.abs(new Random().nextInt()) % aRange;
     }
 }
